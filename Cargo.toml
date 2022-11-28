@@ -23,7 +23,8 @@ futures_api = []
 margin_api = []
 savings_api = []
 wallet_api = []
-all_apis = ["futures_api", "margin_api", "savings_api", "wallet_api"]
+subaccount_api = []
+all_apis = ["futures_api", "margin_api", "savings_api", "wallet_api", "subaccount_api"]
 
 [dependencies]
 chrono = { version = "0.4", features = ["serde"] }
