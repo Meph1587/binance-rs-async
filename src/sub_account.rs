@@ -1,6 +1,5 @@
 use crate::client::*;
 use crate::errors::*;
-use crate::util::*;
 
 static API_V1_SUBACCOUNT_SUBTOSUB: &str = "/sapi/v1/sub-account/transfer/subToSub";
 static API_V1_SUBACCOUNT_SUBTOMASTER: &str = "/sapi/v1/sub-account/transfer/subToMaster";
@@ -17,41 +16,91 @@ pub struct SubAccount {
 
 /// Sub to Sub Transfer Request
 /// transfer asset from sub account or master to sub account
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SubToSubTransfer {
     pub to_email: String,
     pub asset: String,
     pub amount: f64,
-    /// Cannot be greater than 60000
-    pub recv_window: Option<u64>,
 }
 
 /// Sub to Master Transfer Request
 /// transfer asset from sub account to master account
-#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SubToMasterTransfer {
     pub asset: String,
     pub amount: f64,
-    /// Cannot be greater than 60000
-    pub recv_window: Option<u64>,
+}
+
+/// Sub to Master Transfer Request
+/// transfer asset from sub account to master account
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct UniversalTransfer {
+    pub from_email: String,
+    pub to_email: String,
+    pub from_account_type: String,
+    pub to_account_type: String,
+    pub asset: String,
+    pub amount: f64,
 }
 
 
+/// Sub to Master Transfer Request
+/// transfer asset from sub account to master account
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Response {
+    pub tran_id: i64,
+   
+}
+
 impl SubAccount {
+
     
-    pub async fn transfer_subtosub(&self, o: SubToSubTransfer) -> Result<i64> {
-        let recv_window = o.recv_window.unwrap_or(self.recv_window);
-        let request = build_signed_request_p(o, recv_window)?;
-        self.client.post_signed_d(API_V1_SUBACCOUNT_SUBTOSUB, &request).await
+    pub async fn transfer_mastertosub(
+        &self, 
+        subaccount_email: String,
+        asset: String,
+        amount: f64
+    ) -> Result<i64> {
+        let transfer = UniversalTransfer {
+            from_email: "chronograph@dialectic.ky".into(),
+            to_email: subaccount_email.into(),
+            from_account_type: "SPOT".into(),
+            to_account_type: "SPOT".into(),
+            asset: asset.into(),
+            amount: amount.into()
+        };
+        let resp: Response = self.client
+            .post_signed_p("/sapi/v1/sub-account/universalTransfer", transfer, self.recv_window)
+            .await?;
+
+        Ok(resp.tran_id)
     }
 
 
-    pub async fn transfer_subtomaster(&self, o: SubToMasterTransfer) -> Result<i64> {
-        let recv_window = o.recv_window.unwrap_or(self.recv_window);
-        let request = build_signed_request_p(o, recv_window)?;
-        self.client.post_signed_d(API_V1_SUBACCOUNT_SUBTOMASTER, &request).await
+    pub async fn transfer_subtomaster(
+        &self, 
+        subaccount_email: String,
+        asset: String,
+        amount: f64
+    ) -> Result<i64> {
+        let transfer = UniversalTransfer {
+            to_email: "chronograph@dialectic.ky".into(),
+            from_email: subaccount_email.into(),
+            from_account_type: "SPOT".into(),
+            to_account_type: "SPOT".into(),
+            asset: asset.into(),
+            amount: amount.into()
+        };
+        let resp:Response = self.client
+            .post_signed_p("/sapi/v1/sub-account/universalTransfer", transfer, self.recv_window).await?;
+
+        Ok(resp.tran_id)
+        
+    
     }
 
 }

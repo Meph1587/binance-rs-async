@@ -115,3 +115,15 @@ impl Binance for crate::wallet::Wallet {
         }
     }
 }
+
+
+
+#[cfg(feature = "subaccount_api")]
+impl Binance for crate::sub_account::SubAccount {
+    fn new_with_config(api_key: Option<String>, secret_key: Option<String>, config: &Config) -> Self {
+        Self {
+            client: Client::new(api_key, secret_key, config.rest_api_endpoint.clone()),
+            recv_window: config.recv_window,
+        }
+    }
+}

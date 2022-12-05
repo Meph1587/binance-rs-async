@@ -175,6 +175,7 @@ impl Client {
         let signature = hex_encode(hmac::sign(&signed_key, request.as_bytes()).as_ref());
         let url = format!("{}{}?{}&signature={}", self.host, endpoint, request, signature);
 
+        println!("{:?}",url);
         url
     }
 

@@ -1568,7 +1568,7 @@ pub struct WithdrawalRecord {
     /// // confirm times for withdraw
     pub confirm_no: Option<u64>,
     pub info: Option<String>,
-    pub tx_id: String,
+    pub tx_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
@@ -1821,6 +1821,13 @@ pub struct AssetDividend {
     pub div_time: u64,
     pub en_info: String,
     pub tran_id: u64,
+}
+
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct WithdrawResponse {
+    pub id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Default)]
