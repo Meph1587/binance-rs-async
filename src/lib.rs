@@ -92,5 +92,5 @@ pub mod userstream;
 pub mod wallet;
 pub mod websockets;
 pub mod ws_model;
-#[cfg(feature = "subaccount_api")]
-pub mod sub_account;
+#[cfg(feature = "sub_management_api")]
+pub mod sub_management;

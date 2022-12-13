@@ -8,7 +8,7 @@ static API_V1_SUBACCOUNT_SUBTOMASTER: &str = "/sapi/v1/sub-account/transfer/subT
 /// This struct acts as a gateway for all sub-account endpoints.
 /// Preferably use the trait [`Binance`] to get an instance.
 #[derive(Clone)]
-pub struct SubAccount {
+pub struct SubManagement {
     pub client: Client,
     pub recv_window: u64,
 }
@@ -47,6 +47,7 @@ pub struct UniversalTransfer {
 }
 
 
+
 /// Sub to Master Transfer Request
 /// transfer asset from sub account to master account
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -56,7 +57,7 @@ pub struct Response {
    
 }
 
-impl SubAccount {
+impl SubManagement {
 
     
     pub async fn transfer_mastertosub(
